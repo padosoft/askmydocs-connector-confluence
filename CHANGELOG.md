@@ -2,6 +2,13 @@
 
 All notable changes to `padosoft/askmydocs-connector-confluence` are documented here.
 
+## [1.1.0] — 2026-06-22 — Multi-account project binding
+
+### Changed
+
+- Adopt `BaseConnector::resolveProjectKey()` from `padosoft/askmydocs-connector-base` v1.3.0 for project-key resolution during full and incremental sync. The connector now resolves the ingestion project key from the installation's explicit `project_key` binding, falling back to the host's `kb.ingest.default_project` config (itself defaulting to the literal `default`). This replaces the previous synthetic `connector-confluence` fallback and enables multi-account installations that bind to distinct KB projects.
+- Requires `padosoft/askmydocs-connector-base` `^1.3`.
+
 ## v1.0.0 — 2026-05-12 — Initial extraction
 
 Inaugural release. Extracted from AskMyDocs v4.5 (`feature/v4.6` cycle, W4) as a standalone composer package.
