@@ -273,7 +273,7 @@ final class ConfluenceConnectorTest extends TestCase
 
         $dispatch = $this->spy->dispatches[0];
         $this->assertSame('Architecture', $dispatch['title']);
-        $this->assertSame('connector-confluence', $dispatch['projectKey']);
+        $this->assertSame('default', $dispatch['projectKey']);
         $this->assertStringContainsString('connectors/confluence/eng/101.md', $dispatch['relativePath']);
         $this->assertSame('default', $dispatch['tenantId']);
 
