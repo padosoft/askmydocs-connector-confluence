@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Padosoft\AskMyDocsConnectorBase\BaseConnector;
+use Padosoft\AskMyDocsConnectorBase\Contracts\DeclaresProvenance;
 use Padosoft\AskMyDocsConnectorBase\Contracts\ConnectorIngestionContract;
 use Padosoft\AskMyDocsConnectorBase\Exceptions\ConnectorApiException;
 use Padosoft\AskMyDocsConnectorBase\Exceptions\ConnectorAuthException;
 use Padosoft\AskMyDocsConnectorBase\Exceptions\ConnectorPaginationLimitException;
 use Padosoft\AskMyDocsConnectorBase\HealthStatus;
+use Padosoft\AskMyDocsConnectorBase\ProvenanceTier;
 use Padosoft\AskMyDocsConnectorBase\Models\ConnectorInstallation;
 use Padosoft\AskMyDocsConnectorBase\Support\Metadata\SourceAwareMetadataBuilder;
 use Padosoft\AskMyDocsConnectorBase\Support\Metadata\VendorMimeSelector;
@@ -59,7 +61,7 @@ use Padosoft\AskMyDocsConnectorConfluence\Confluence\ConfluenceStorageToMarkdown
  *   - CONNECTOR_CONFLUENCE_CLIENT_SECRET
  *   - CONNECTOR_CONFLUENCE_REDIRECT_URI
  */
-class ConfluenceConnector extends BaseConnector
+class ConfluenceConnector extends BaseConnector implements DeclaresProvenance
 {
     public function key(): string
     {
@@ -427,6 +429,24 @@ class ConfluenceConnector extends BaseConnector
         // credentials; the access token will expire naturally.
         $this->vault->clearCredentials($installationId);
         $this->emitAudit('disconnected', installationId: $installationId);
+    }
+
+    /**
+     * Content here was written inside the organisation.
+     *
+     * This connector reads a Confluence site the organisation administers — a system whose write access the
+     * organisation grants. Whoever authored a document had to be given the
+     * ability to author it, which is exactly the property `TrustedInternal`
+     * records. Contrast the IMAP connector, whose mailbox accepts a message
+     * from anyone who knows the address.
+     *
+     * "Trusted" is a statement about authorship, not about correctness or
+     * curation. An internal page can be wrong, stale or unreviewed; that is
+     * the Auto-Wiki curation tier's question, and it is a different one.
+     */
+    public function provenanceTier(int $installationId): ProvenanceTier
+    {
+        return ProvenanceTier::TrustedInternal;
     }
 
     public function health(int $installationId): HealthStatus

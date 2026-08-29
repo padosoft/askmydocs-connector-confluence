@@ -61,6 +61,8 @@ This package is the smallest possible surface for shipping that integration:
 - 🏢 **Per-tenant isolated** — every credential read and ingestion dispatch is scoped to the active `TenantContext`.
 - 🧪 **Test-friendly** — pure-PHP unit tests for the storage-format converter, `Http::fake()` feature tests for the connector + paginator, opt-in live test against a real Atlassian sandbox cloud when `CONNECTOR_CONFLUENCE_LIVE=1`.
 
+- **Provenance declaration** — implements `DeclaresProvenance` (connector-base ^1.5), labelling ingested content `TrustedInternal`: a Confluence site the organisation administers, so whoever wrote a document had to be granted the ability to write it. A statement about *authorship*, not about correctness — see the IMAP connector for the contrasting case.
+
 ## 🚀 AI vibe-coding pack included
 
 This package was built with a vibe-coding pack of Claude Code skills and rules (`.claude/` directory in the parent AskMyDocs repo) that codify the architectural invariants — the IoC contract that keeps this package standalone-agnostic, the Atlassian REST API quirks the connector navigates (relative `_links.next`, scope-driven `cloud_id` resolution, archived pages as deletion signals), the failure-loud exception taxonomy, the storage-format-XHTML parsing contract.
